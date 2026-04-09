@@ -621,12 +621,8 @@ impl TimsData for TimsLazyLoder {
 
                 let decompressed_bytes = zstd_decompress(&compressed_data).unwrap();
 
-                let (scan_counts, tof, intensity) =
+                let (scan, tof, intensity) =
                     parse_decompressed_bruker_binary_data(&decompressed_bytes).unwrap();
-                // scan_counts holds per-scan peak counts (length = num_scans).
-                // Flatten to per-peak scan indices (length = num_peaks) so that
-                // scan, tof, and intensity arrays are all the same length.
-                let scan = flatten_scan_values(&scan_counts, true);
 
                 let ms_type_raw = self.raw_data_layout.frame_meta_data[frame_index].ms_ms_type;
 
@@ -697,9 +693,7 @@ impl TimsData for TimsInMemoryLoader {
         }
 
         let tof_i32 = raw_frame.tof.iter().map(|&x| x as i32).collect();
-        // get_raw_frame now returns already-flattened per-peak scan indices,
-        // so no need to call flatten_scan_values here.
-        let scan = raw_frame.scan;
+        let scan = flatten_scan_values(&raw_frame.scan, true);
 
         let mz = self.index_converter.tof_to_mz(frame_id, &raw_frame.tof);
         let inverse_mobility = self
@@ -736,12 +730,8 @@ impl TimsData for TimsInMemoryLoader {
 
         let decompressed_bytes = zstd_decompress(&frame_data).unwrap();
 
-        let (scan_counts, tof, intensity) =
+        let (scan, tof, intensity) =
             parse_decompressed_bruker_binary_data(&decompressed_bytes).unwrap();
-        // scan_counts holds per-scan peak counts (length = num_scans).
-        // Flatten to per-peak scan indices (length = num_peaks) so that
-        // scan, tof, and intensity arrays are all the same length.
-        let scan = flatten_scan_values(&scan_counts, true);
 
         let ms_type_raw = self.raw_data_layout.frame_meta_data[frame_index].ms_ms_type;
 
