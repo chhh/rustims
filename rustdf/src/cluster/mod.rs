@@ -1,7 +1,6 @@
 pub mod utility;
 pub mod cluster;
 pub mod feature;
-#[cfg(feature = "cluster-io")]
 pub mod io;
 pub mod pseudo;
 pub mod peak;
