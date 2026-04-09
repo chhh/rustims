@@ -5,6 +5,7 @@ use std::sync::Arc;
 use rayon::prelude::*;
 use crate::cluster::cluster::ClusterResult1D;
 use crate::cluster::feature::SimpleFeature;
+#[cfg(feature = "cluster-io")]
 use crate::cluster::io::load_parquet;
 use crate::cluster::peak::ThresholdMode;
 use crate::cluster::pseudo::{PseudoSpecOpts, PseudoSpectrum, build_pseudo_spectra_from_pairs, cluster_mz_mu, PseudoFragment};
@@ -1073,6 +1074,7 @@ impl FragmentIndex {
         }
     }
 
+    #[cfg(feature = "cluster-io")]
     pub fn from_parquet_file(
         dia_index: Arc<DiaIndex>,
         parquet_path: impl AsRef<Path>,
@@ -1088,6 +1090,7 @@ impl FragmentIndex {
     }
 
     /// Your requested builder: read all `.parquet` files in a directory and merge.
+    #[cfg(feature = "cluster-io")]
     pub fn from_parquet_dir(
         dia_index: Arc<DiaIndex>,
         dir: impl AsRef<Path>,
